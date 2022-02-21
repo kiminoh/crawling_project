@@ -21,7 +21,7 @@ def main():
     driver.get('https://map.kakao.com/')  # 주소 가져오기
 
     search("강남구 커피")
-
+    driver.quit()
     print("finish")
 
 
@@ -93,7 +93,7 @@ def getMenuInfo(menu):
     if len(menuPrices) != 0:
         menuPrice =  menuPrices[0].text.split(' ')[1]
 
-    return [menuName, menuPrice]
+    return dict(name=menuName, price=menuPrice)
 
 if __name__ == "__main__":
     main()
