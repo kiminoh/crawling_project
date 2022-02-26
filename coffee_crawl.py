@@ -54,6 +54,7 @@ def crawling(placeLists):
         print(menuInfos)
 
 def searchMenuInfo(i):
+    global soup
     # 상세페이지로 가서 메뉴찾기
 
     detail_page_xpath = '//*[@id="info.search.place.list"]/li[' + str(i + 1) + ']/div[5]/div[4]/a[1]'
@@ -70,15 +71,23 @@ def searchMenuInfo(i):
     nophotoType = soup.select('.cont_menu > .list_menu > .nophoto_type')
     photoType = soup.select('.cont_menu > .list_menu > .photo_type')
 
+
     if len(menuonlyType) != 0:
+        menuInfos.append(getTitle())
         for menu in menuonlyType:
             menuInfos.append(getMenuInfo(menu))
+
     elif len(nophotoType) != 0:
+        menuInfos.append(getTitle())
         for menu in nophotoType:
             menuInfos.append(getMenuInfo(menu))
     else:
+        menuInfos.append(getTitle())
         for menu in photoType:
             menuInfos.append(getMenuInfo(menu))
+
+
+
 
     driver.close()
     driver.switch_to.window(driver.window_handles[0])  # 검색 탭으로 전환하는 것
@@ -92,8 +101,19 @@ def getMenuInfo(menu):
 
     if len(menuPrices) != 0:
         menuPrice =  menuPrices[0].text.split(' ')[1]
+    else:
+        menuPrice = '가격정보없음'
 
-    return dict(name=menuName, price=menuPrice)
+
+    return dict(menu=menuName, price=menuPrice)
+
+def getTitle():
+    titleName = soup.find('title').text.split('|')[0]
+    titleAddress = soup.select('.cont_essential > .details_placeinfo > .placeinfo_default > .location_detail > .txt_address')
+    for shopaddress in titleAddress:
+        address = shopaddress.text.replace(' ', '').replace('\n', '').strip()
+
+    return dict(shopname=titleName, shopaddress= address)
 
 if __name__ == "__main__":
     main()
